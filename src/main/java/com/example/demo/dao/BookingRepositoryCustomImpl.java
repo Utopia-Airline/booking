@@ -4,10 +4,7 @@ import com.example.demo.entity.Booking;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.util.*;
@@ -150,6 +147,7 @@ public class BookingRepositoryCustomImpl implements BookingRepositoryCustom {
   @Transactional
   @Override
   public Page<Booking> findAllTypedQuery(String origin, String destination) {
+    Page<Booking> bookings = null;
     String queryCount = "SELECT COUNT(*) as total\n" +
       "FROM booking\n" +
       "JOIN flight_bookings fb on booking.id = fb.booking_id\n" +
@@ -182,21 +180,23 @@ public class BookingRepositoryCustomImpl implements BookingRepositoryCustom {
       "OR origin.iata_id LIKE :origin OR origin.name LIKE :origin)" +
       "AND (dest.country LIKE :destination OR dest.city LIKE :destination " +
       "OR dest.iata_id LIKE :destination OR dest.name LIKE :destination)";
-    Query tq = entityManager.createNativeQuery(queryCount);
-    tq.setParameter("origin", "%" + origin + "%");
-    tq.setParameter("destination", "%" + destination + "%");
-    Integer total = Integer.parseInt(tq.getSingleResult().toString());
-    tq = entityManager.createNativeQuery(query, Booking.class);
-    tq.setParameter("origin", "%" + origin + "%");
-    tq.setParameter("destination", "%" + destination + "%");
-    tq.setFirstResult(0);
-    tq.setMaxResults(20);
-    Page<Booking> bookings = null;
+    EntityTransaction et = entityManager.getTransaction();
     try {
+      et.begin();
+      Query tq = entityManager.createNativeQuery(queryCount);
+      tq.setParameter("origin", "%" + origin + "%");
+      tq.setParameter("destination", "%" + destination + "%");
+      Integer total = Integer.parseInt(tq.getSingleResult().toString());
+      tq = entityManager.createNativeQuery(query, Booking.class);
+      tq.setParameter("origin", "%" + origin + "%");
+      tq.setParameter("destination", "%" + destination + "%");
+      tq.setFirstResult(0);
+      tq.setMaxResults(20);
       Pageable pageable = PageRequest.of(0, 30);
       bookings = new PageImpl<>(tq.getResultList(), pageable, total);
+      et.commit();
     } catch (Exception e) {
-      e.printStackTrace();
+      et.rollback();
     }
     return bookings;
   }
