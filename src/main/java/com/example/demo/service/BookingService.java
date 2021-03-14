@@ -20,18 +20,14 @@ import java.util.Optional;
 @Service
 public class BookingService {
   private final BookingRepository bookingRepository;
-  private final GuestBookingRepository guestBookingRepository;
-  private final UserBookingRepository userBookingRepository;
   private final BookingGuestRepository bookingGuestRepository;
   private final UserRepository userRepository;
   private final CurrentUser currentUser;
   private static final Logger LOGGER = LoggerFactory.getLogger(BookingService.class);
 
   @Autowired
-  public BookingService(BookingRepository bookingRepository, GuestBookingRepository guestBookingRepository, UserBookingRepository userBookingRepository, BookingGuestRepository bookingGuestRepository, UserRepository userRepository, CurrentUser currentUser) {
+  public BookingService(BookingRepository bookingRepository, BookingGuestRepository bookingGuestRepository, UserRepository userRepository, CurrentUser currentUser) {
     this.bookingRepository = bookingRepository;
-    this.guestBookingRepository = guestBookingRepository;
-    this.userBookingRepository = userBookingRepository;
     this.bookingGuestRepository = bookingGuestRepository;
     this.userRepository = userRepository;
     this.currentUser = currentUser;
@@ -45,8 +41,16 @@ public class BookingService {
 
   @Transactional
   public Page<Booking> getAllBookingsForUser(Long userId, int page, int limit, Map<String, String> filters) {
-    Pageable pageable = PageRequest.of(page, limit);
+    Sort sort = Sort.by("id").descending();
+    Pageable pageable = PageRequest.of(page, limit, sort);
     return bookingRepository.findAllByUserId(userId, pageable);
+  }
+
+  @Transactional
+  public Page<Booking> getAllBookingsForAgent(Long agentId, int page, int limit, Map<String, String> filters) {
+    Sort sort = Sort.by("id").descending();
+    Pageable pageable = PageRequest.of(page, limit, sort);
+    return bookingRepository.findAllByAgentId(agentId, pageable);
   }
 
   @Transactional
@@ -182,7 +186,6 @@ public class BookingService {
   }
 
   public Optional<Booking> getBookingForGuest(String confirmationCode) {
-
     return bookingRepository.findByConfirmationCode(confirmationCode);
   }
 
@@ -201,14 +204,6 @@ public class BookingService {
   public boolean ifAgent(Long agentId) {
     return (currentUser != null && currentUser.getRole() == Role.AGENT
       && Objects.equals(currentUser.getId(), agentId));
-  }
-
-  @Transactional
-  public Page<GuestBooking> getAllGuestBookingsLege(int page, int limit, Map<String, String> filters) {
-    String _sort = filters.get("sort");
-    Sort sort = (_sort != null) ? Sort.by(_sort).descending() : null;
-    Pageable pageable = (sort != null) ? PageRequest.of(page, limit, sort) : PageRequest.of(page, limit);
-    return guestBookingRepository.findAll(pageable);
   }
 }
 

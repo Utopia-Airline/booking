@@ -19,6 +19,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Booking
 
   Page<Booking> findAllByUserId(Long userId, Pageable pageable);
 
+  Page<Booking> findAllByAgentId(Long userId, Pageable pageable);
+
   Optional<Booking> findByConfirmationCode(String confirmationCode);
 
   Page<Booking> findAllByPassengersGivenNameContaining(@Param("fName") String fName, Pageable pageable);

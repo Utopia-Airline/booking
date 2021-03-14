@@ -3,8 +3,6 @@ package com.example.demo.controller;
 import com.example.demo.Config.CurrentUser;
 import com.example.demo.dto.GuestDto;
 import com.example.demo.entity.Booking;
-import com.example.demo.entity.GuestBooking;
-import com.example.demo.entity.UserBooking;
 import com.example.demo.service.BookingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,6 +91,16 @@ public class BookingController {
                                              @RequestParam(required = false) Map<String, String> filters) {
     if (bookingService.ifOwnerOrAdmin(userId))
       return bookingService.getAllBookingsForUser(userId, page, limit, filters);
+    else
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have enough privilege to access this resource");
+  }
+  @GetMapping("/agent")
+  public Page<Booking> getAllBookingsForAgent(@RequestParam Long agentId,
+                                             @RequestParam(defaultValue = "0", required = false) int page,
+                                             @RequestParam(defaultValue = "20", required = false) int limit,
+                                             @RequestParam(required = false) Map<String, String> filters) {
+    if (bookingService.ifOwnerOrAdmin(agentId))
+      return bookingService.getAllBookingsForAgent(agentId, page, limit, filters);
     else
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have enough privilege to access this resource");
   }
