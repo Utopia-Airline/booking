@@ -38,7 +38,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                                   FilterChain filterChain) throws ServletException, IOException {
     HttpServletRequest request = (HttpServletRequest) httpServletRequest;
     HttpServletResponse response = (HttpServletResponse) httpServletResponse;
-    LOGGER.info("AUTHORIZATION START");
+    LOGGER.info("AUTHORIZATION START AT {} ", authUrl);
     final Cookie[] cookies = httpServletRequest.getCookies();
     if (cookies != null && cookies.length >= 1) {
       final Optional<Cookie> sessionCookie = Arrays.stream(cookies)
