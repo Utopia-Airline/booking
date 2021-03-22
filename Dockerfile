@@ -1,7 +1,6 @@
 # USAGE
 # docker build -t booking .
 # docker run --rm -it -p 3000:3000 booking
-FROM maven:3.5-jdk-8 AS builder
 FROM maven:3.6.3-openjdk-15-slim AS builder
 WORKDIR /workspace
 COPY . .
