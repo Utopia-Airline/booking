@@ -84,8 +84,8 @@ public class BookingController {
   // ====================================================== guests =================================================
   // ====================================================== users =================================================
 
-  @GetMapping("/user")
-  public Page<Booking> getAllBookingsForUser(@RequestParam Long userId,
+  @GetMapping("/users/{id}")
+  public Page<Booking> getAllBookingsForUser(@PathVariable("id") Long userId,
                                              @RequestParam(defaultValue = "0", required = false) int page,
                                              @RequestParam(defaultValue = "20", required = false) int limit,
                                              @RequestParam(required = false) Map<String, String> filters) {
@@ -94,11 +94,12 @@ public class BookingController {
     else
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have enough privilege to access this resource");
   }
-  @GetMapping("/agent")
-  public Page<Booking> getAllBookingsForAgent(@RequestParam Long agentId,
-                                             @RequestParam(defaultValue = "0", required = false) int page,
-                                             @RequestParam(defaultValue = "20", required = false) int limit,
-                                             @RequestParam(required = false) Map<String, String> filters) {
+
+  @GetMapping("/agents/{id}")
+  public Page<Booking> getAllBookingsForAgent(@PathVariable("id") Long agentId,
+                                              @RequestParam(defaultValue = "0", required = false) int page,
+                                              @RequestParam(defaultValue = "20", required = false) int limit,
+                                              @RequestParam(required = false) Map<String, String> filters) {
     if (bookingService.ifOwnerOrAdmin(agentId))
       return bookingService.getAllBookingsForAgent(agentId, page, limit, filters);
     else

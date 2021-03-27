@@ -143,8 +143,6 @@ public class BookingRepositoryCustomImpl implements BookingRepositoryCustom {
     return total;
   }
 
-
-  @Transactional
   @Override
   public Page<Booking> findAllTypedQuery(String origin, String destination) {
     Page<Booking> bookings = null;
