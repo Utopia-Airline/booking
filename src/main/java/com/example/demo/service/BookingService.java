@@ -40,17 +40,19 @@ public class BookingService {
   }
 
   @Transactional
-  public Page<Booking> getAllBookingsForUser(Long userId, int page, int limit, Map<String, String> filters) {
+  public Page<Booking> getAllBookingsForUser(Long userId, Boolean isActive, int page, int limit,
+                                             Map<String, String> filters) {
     Sort sort = Sort.by("id").descending();
     Pageable pageable = PageRequest.of(page, limit, sort);
-    return bookingRepository.findAllByUserId(userId, pageable);
+    return bookingRepository.findAllByUser(userId, isActive, pageable);
   }
 
   @Transactional
-  public Page<Booking> getAllBookingsForAgent(Long agentId, int page, int limit, Map<String, String> filters) {
+  public Page<Booking> getAllBookingsForAgent(Long agentId, Boolean isActive, int page, int limit,
+                                              Map<String, String> filters) {
     Sort sort = Sort.by("id").descending();
     Pageable pageable = PageRequest.of(page, limit, sort);
-    return bookingRepository.findAllByAgentId(agentId, pageable);
+    return bookingRepository.findAllByAgent(agentId, isActive, pageable);
   }
 
   @Transactional
