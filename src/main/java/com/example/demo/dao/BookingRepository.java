@@ -17,9 +17,12 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, Booking
 
   Page<Booking> findByIsActive(@Param("isActive") Boolean isActive, Pageable pageable);
 
-  Page<Booking> findAllByUserId(Long userId, Pageable pageable);
+  @Query(value = "FROM Booking b WHERE b.user.id = :user_id AND b.isActive = :is_active")
+  Page<Booking> findAllByUser(@Param("user_id") Long userId, @Param("is_active") Boolean isActive, Pageable pageable);
 
-  Page<Booking> findAllByAgentId(Long userId, Pageable pageable);
+  //  Page<Booking> findAllByAgentId(Long agentId, Pageable pageable);
+  @Query(value = "FROM Booking b WHERE b.agent.id = :agent_id AND b.isActive = :is_active")
+  Page<Booking> findAllByAgent(@Param("agent_id") Long agentId, @Param("is_active") Boolean isActive, Pageable pageable);
 
   Optional<Booking> findByConfirmationCode(String confirmationCode);
 
