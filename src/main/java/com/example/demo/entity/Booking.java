@@ -129,7 +129,7 @@ public class Booking {
     return confirmationCode;
   }
 
-  public void setConfirmationCode(String confirmationCode) {
+  public void setConfirmationCode() {
     this.confirmationCode = UUID.randomUUID().toString();
   }
 

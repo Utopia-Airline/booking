@@ -132,6 +132,7 @@ public class BookingService {
   @Transactional
   public void addBooking(Booking booking) {
     if (validateInsertion(booking)) {
+      booking.setConfirmationCode();
       if (ifAdmin())
         bookingRepository.saveAndFlush(booking);
       else if (booking.getAgent() != null && ifAgent(booking.getAgent().getId()))
@@ -182,6 +183,7 @@ public class BookingService {
   }
 
   private void createGuestBooking(GuestDto guestBooking) {
+    guestBooking.getBooking().setConfirmationCode();
     Booking _booking = bookingRepository.saveAndFlush(guestBooking.getBooking());
     guestBooking.getGuest().setId(_booking.getId());
     bookingGuestRepository.saveAndFlush(guestBooking.getGuest());
